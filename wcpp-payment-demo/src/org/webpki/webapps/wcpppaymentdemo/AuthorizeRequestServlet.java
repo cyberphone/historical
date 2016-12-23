@@ -65,7 +65,7 @@ public class AuthorizeRequestServlet extends HttpServlet implements BaseProperti
           {
             JSONObjectReader auth_req = Messages.parseBaseMessage (Messages.AUTHORIZE,
                                                                    JSONParser.parse (request.getParameter ("authreq")));
-            logger.info ("Authorize Request:\n" + new String (new JSONObjectWriter (auth_req).serializeJSONObject (JSONOutputFormats.PRETTY_PRINT), "UTF-8"));
+            logger.info ("Authorize Request:\n" + new JSONObjectWriter (auth_req).serializeToString (JSONOutputFormats.PRETTY_PRINT));
             String auth_url = auth_req.getString (AUTH_URL_JSON);
             if (!auth_url.startsWith (PaymentDemoService.bank_url))
               {
@@ -93,10 +93,10 @@ public class AuthorizeRequestServlet extends HttpServlet implements BaseProperti
                 .setAlgorithmPreferences (AlgorithmPreferences.JOSE));
             HTTPSWrapper https_wrapper = new HTTPSWrapper ();
             https_wrapper.setRequireSuccess (true);
-            https_wrapper.makePostRequest (auth_url, transact.serializeJSONObject (JSONOutputFormats.NORMALIZED));
+            https_wrapper.makePostRequest (auth_url, transact.serializeToBytes (JSONOutputFormats.NORMALIZED));
             authorized_result = Messages.parseBaseMessage (Messages.TRANSACTION_RESPONSE,
                                                            JSONParser.parse (https_wrapper.getData ()));
-            logger.info ("Authorized Result:\n" + new String (new JSONObjectWriter (authorized_result).serializeJSONObject (JSONOutputFormats.PRETTY_PRINT), "UTF-8"));
+            logger.info ("Authorized Result:\n" + new JSONObjectWriter (authorized_result).serializeToString (JSONOutputFormats.PRETTY_PRINT));
             if (authorized_result.hasProperty (ERROR_JSON))
               {
                 logger.severe (error_message = authorized_result.getString (ERROR_JSON));
@@ -106,7 +106,7 @@ public class AuthorizeRequestServlet extends HttpServlet implements BaseProperti
                 JSONObjectReader copy = authorized_result.getObject (PAYMENT_REQUEST_JSON);
                 payment_request = PaymentRequest.parseJSONData (copy);
                 copy.getSignature (AlgorithmPreferences.JOSE);                   // Just to keep the parser happy...
-                if (!ArrayUtil.compare (HashAlgorithms.SHA256.digest (new JSONObjectWriter (copy).serializeJSONObject (JSONOutputFormats.NORMALIZED)),
+                if (!ArrayUtil.compare (HashAlgorithms.SHA256.digest (new JSONObjectWriter (copy).serializeToBytes (JSONOutputFormats.NORMALIZED)),
                                         request_hash))
                   {
                     throw new IOException ("Request copy mis-match");
@@ -130,8 +130,8 @@ public class AuthorizeRequestServlet extends HttpServlet implements BaseProperti
                          payment_request,
                          card_type, 
                          reference_pan,
-                         new String (transact.serializeJSONObject (JSONOutputFormats.NORMALIZED), "UTF-8"),
-                         authorized_result == null ? "N/A" : new String (new JSONObjectWriter (authorized_result).serializeJSONObject (JSONOutputFormats.NORMALIZED), "UTF-8"));
+                         transact.serializeToString (JSONOutputFormats.NORMALIZED),
+                         authorized_result == null ? "N/A" : new JSONObjectWriter (authorized_result).serializeToString (JSONOutputFormats.NORMALIZED));
       }
 
     public void doGet (HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException

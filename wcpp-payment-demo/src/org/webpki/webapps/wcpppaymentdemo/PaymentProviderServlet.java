@@ -76,7 +76,7 @@ public class PaymentProviderServlet extends HttpServlet implements BasePropertie
     private JSONObjectReader getUserAuthorization (byte[] raw_data) throws IOException
       {
         JSONObjectReader auth_data = Messages.parseBaseMessage (Messages.AUTH_DATA, JSONParser.parse (raw_data));
-        logger.info ("Decrypted \"" + AUTH_DATA_JSON + "\":\n" + new String (new JSONObjectWriter (auth_data).serializeJSONObject (JSONOutputFormats.PRETTY_PRINT), "UTF-8"));
+        logger.info ("Decrypted \"" + AUTH_DATA_JSON + "\":\n" + new JSONObjectWriter (auth_data).serializeToString (JSONOutputFormats.PRETTY_PRINT));
         return auth_data;
       }
 
@@ -91,7 +91,7 @@ public class PaymentProviderServlet extends HttpServlet implements BasePropertie
             String client_ip_address = trans_req.getString (CLIENT_IP_ADDRESS_JSON);
             trans_req.getDateTime (DATE_TIME_JSON);  // We have no DB...
             logger.info ("Transaction Request [" + client_ip_address + "," + request_transaction_id + "]:\n" +
-                         new String (new JSONObjectWriter (trans_req).serializeJSONObject (JSONOutputFormats.PRETTY_PRINT), "UTF-8"));
+                         new JSONObjectWriter (trans_req).serializeToString (JSONOutputFormats.PRETTY_PRINT));
             JSONObjectReader encrypted_auth_data = trans_req.getObject (AUTH_DATA_JSON).getObject (ENCRYPTED_DATA_JSON);
 
             // "working" simulation - the prototype is simply too quick :-)
@@ -168,7 +168,7 @@ public class PaymentProviderServlet extends HttpServlet implements BasePropertie
                 throw new IOException ("Unexpected hash algorithm: " + hash_alg.getAlgorithmId ());
               }
             if (!ArrayUtil.compare (request_hash.getBinary (VALUE_JSON),
-                                    HashAlgorithms.SHA256.digest (new JSONObjectWriter (payee).serializeJSONObject (JSONOutputFormats.NORMALIZED))))
+                                    HashAlgorithms.SHA256.digest (new JSONObjectWriter (payee).serializeToBytes (JSONOutputFormats.NORMALIZED))))
               {
                 throw new IOException ("\"" + REQUEST_HASH_JSON + "\" mismatch");
               }
@@ -212,6 +212,6 @@ public class PaymentProviderServlet extends HttpServlet implements BasePropertie
         response.setContentType ("application/json; charset=utf-8");
         response.setHeader ("Pragma", "No-Cache");
         response.setDateHeader ("EXPIRES", 0);
-        response.getOutputStream ().write (result.serializeJSONObject (JSONOutputFormats.NORMALIZED));
+        response.getOutputStream ().write (result.serializeToBytes (JSONOutputFormats.NORMALIZED));
       }
   }

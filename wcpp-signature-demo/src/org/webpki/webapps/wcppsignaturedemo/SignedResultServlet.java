@@ -102,7 +102,7 @@ public class SignedResultServlet extends HttpServlet implements BaseProperties
                   }
                 VerifierInterface verifier = new KeyStoreVerifier (SignatureDemoService.client_root_kestore);
                 json.getSignature (AlgorithmPreferences.JOSE).verify (new JSONX509Verifier (verifier));
-                signature = new String (new JSONObjectWriter (json).serializeJSONObject (JSONOutputFormats.PRETTY_HTML), "UTF-8");
+                signature = new JSONObjectWriter (json).serializeToString (JSONOutputFormats.PRETTY_HTML);
               }
             else
               {
@@ -125,8 +125,8 @@ public class SignedResultServlet extends HttpServlet implements BaseProperties
                 verifier.verifyCertificatePath (new X509Certificate[]{cert});
                 JSONObjectReader payload = JSONParser.parse (Base64URL.decode (signature.substring (signature.indexOf ('.') + 1, signature.lastIndexOf ('.'))));
                 signature = "<div align=\"center\" style=\"padding-bottom:10pt\"><b>Actual Response</b></div>" + signature +
-                "<div align=\"center\" style=\"padding:20pt 0px 10pt 0px\"><b>Decoded Header</b></div>" + new String (new JSONObjectWriter (header).serializeJSONObject (JSONOutputFormats.PRETTY_HTML), "UTF-8") +
-                "<div align=\"center\" style=\"padding:20pt 0px 10pt 0px\"><b>Decoded Payload</b></div>" + new String (new JSONObjectWriter (payload).serializeJSONObject (JSONOutputFormats.PRETTY_HTML), "UTF-8");
+                "<div align=\"center\" style=\"padding:20pt 0px 10pt 0px\"><b>Decoded Header</b></div>" + new JSONObjectWriter (header).serializeToString (JSONOutputFormats.PRETTY_HTML) +
+                "<div align=\"center\" style=\"padding:20pt 0px 10pt 0px\"><b>Decoded Payload</b></div>" + new JSONObjectWriter (payload).serializeToString (JSONOutputFormats.PRETTY_HTML);
               }
             Thread.sleep (1000);
           }

@@ -45,7 +45,7 @@ public class ShowRequestServlet extends HttpServlet implements BaseProperties
                 throw new IOException ("Internal Error - Missing request argument");
               }
             JSONObjectReader json = JSONParser.parse (signature_request);
-            signature_request = new String (new JSONObjectWriter (json).serializeJSONObject (JSONOutputFormats.PRETTY_HTML), "UTF-8");
+            signature_request = new JSONObjectWriter (json).serializeToString (JSONOutputFormats.PRETTY_HTML);
          }
         catch (IOException e)
           {
