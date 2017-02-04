@@ -18,7 +18,7 @@ package org.webpki.webapps.wcpppaymentdemo;
 
 import java.io.IOException;
 
-import java.util.Date;
+import java.util.GregorianCalendar;
 
 import java.util.logging.Logger;
 
@@ -84,7 +84,7 @@ public class AuthorizeRequestServlet extends HttpServlet implements BaseProperti
             transact.setObject (AUTH_DATA_JSON, auth_req.getObject (AUTH_DATA_JSON));
             transact.setString (CLIENT_IP_ADDRESS_JSON, request.getRemoteAddr());
             transact.setString (TRANSACTION_ID_JSON, "#" + next_transaction_id++);
-            transact.setDateTime (DATE_TIME_JSON, new Date(), true);
+            transact.setDateTime (DATE_TIME_JSON, new GregorianCalendar(), true);
             KeyStoreSigner signer = new KeyStoreSigner (PaymentDemoService.merchant_eecert_key, null);
             signer.setExtendedCertPath (true);
             signer.setKey (null, PaymentDemoService.key_password);

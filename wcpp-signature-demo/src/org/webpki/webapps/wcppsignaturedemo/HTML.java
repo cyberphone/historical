@@ -18,7 +18,7 @@ package org.webpki.webapps.wcppsignaturedemo;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
 import javax.servlet.ServletException;
@@ -209,11 +209,11 @@ public class HTML implements BaseProperties
         return Base64URL.encode (binary);
       }
     
-    private static String niceDate (Date date)
+    private static String niceDate (GregorianCalendar dateTime)
       {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z");
         sdf.setTimeZone (TimeZone.getTimeZone ("UTC"));
-        return sdf.format (date);
+        return sdf.format (dateTime.getTime());
       }
 
 
@@ -917,7 +917,7 @@ public class HTML implements BaseProperties
 
     public static void signData (HttpServletResponse response, boolean html_flag, boolean json_flag, boolean jws_flag, boolean detached_flag) throws IOException, ServletException 
       {
-        String date_string = ISODateTime.formatDateTime (new Date (), true);
+        String date_string = ISODateTime.formatDateTime (new GregorianCalendar (), true);
         String reference_id = "#" +  SignatureDemoService.reference_id++;
         String mime_type = html_flag ? "text/html" : "application/pdf";
         HTML.output (response, HTML.getHTML (

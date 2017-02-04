@@ -18,7 +18,7 @@ package org.webpki.webapps.wcpppaymentdemo;
 
 import java.io.IOException;
 
-import java.util.Date;
+import java.util.GregorianCalendar;
 
 import org.webpki.crypto.AlgorithmPreferences;
 import org.webpki.crypto.KeyStoreSigner;
@@ -33,14 +33,14 @@ public class PaymentRequest implements BaseProperties
     int amount;
     Currencies currency;
     String reference_id;
-    Date date_time;
+    GregorianCalendar date_time;
     
     public PaymentRequest (int amount)
       {
         this.amount = amount;
         this.currency = Currencies.USD;
         this.reference_id = "#" + CheckoutServlet.next_reference_id++;
-        this.date_time = new Date ();
+        this.date_time = new GregorianCalendar ();
         this.common_name = MerchantServlet.COMMON_NAME;
       }
 
@@ -71,7 +71,7 @@ public class PaymentRequest implements BaseProperties
         payment_request.amount = payee.getInt (AMOUNT_JSON);
         payment_request.currency = Currencies.valueOf (payee.getString (CURRENCY_JSON));
         payment_request.reference_id = payee.getString (REFERENCE_ID_JSON);
-        payment_request.date_time = payee.getDateTime (DATE_TIME_JSON).getTime ();
+        payment_request.date_time = payee.getDateTime (DATE_TIME_JSON);
         return payment_request;
       }
   }

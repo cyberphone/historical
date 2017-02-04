@@ -144,7 +144,7 @@ public class JWK implements Serializable
           }
       }
 
-    private String getCryptoBinary (BigInteger value, String name)
+    private String getCryptoBinary (BigInteger value, String name) throws IOException
       {
         byte[] crypto_binary = value.toByteArray ();
         if (crypto_binary[0] == 0x00)

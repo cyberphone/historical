@@ -22,7 +22,7 @@ import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
 
-import java.util.Date;
+import java.util.GregorianCalendar;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -193,7 +193,7 @@ public class PaymentProviderServlet extends HttpServlet implements BasePropertie
             result.setBinary (PAYMENT_TOKEN_JSON, payment_token);
             result.setString (REFERENCE_PAN_JSON, payee_pan.toString ());
             result.setString (TRANSACTION_ID_JSON, "#" + transaction_id++);
-            result.setDateTime (DATE_TIME_JSON, new Date (), true);
+            result.setDateTime (DATE_TIME_JSON, new GregorianCalendar (), true);
             KeyStoreSigner signer = new KeyStoreSigner (PaymentDemoService.bank_eecert_key, null);
             signer.setExtendedCertPath (true);
             signer.setKey (null, PaymentDemoService.key_password);
