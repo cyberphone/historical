@@ -599,7 +599,7 @@ public class HTML implements BaseProperties
               "    crypto.subtle.encrypt(asym_alg, public_key, new Uint8Array(raw_aes_key)).then (function(encryped_aes_key) {\n" +
               "        encrypted_key." + ALGORITHM_JSON + " = '" + AsymEncryptionAlgorithms.RSA_OAEP_SHA256_MGF1P.getAlgorithmId (AlgorithmPreferences.JOSE) + "';\n" +
               "        var public_key = encrypted_key." + JSONSignatureDecoder.PUBLIC_KEY_JSON + " = {};\n" +
-              "        public_key." + JSONSignatureDecoder.TYPE_JSON + " = '" + JSONSignatureDecoder.RSA_PUBLIC_KEY + "';\n" +
+              "        public_key." + JSONSignatureDecoder.KTY_JSON + " = '" + JSONSignatureDecoder.RSA_PUBLIC_KEY + "';\n" +
               "        public_key." + JSONSignatureDecoder.N_JSON + " = selected_card.bank_encryption_key.n;\n" +
               "        public_key." + JSONSignatureDecoder.E_JSON + " = selected_card.bank_encryption_key.e;\n" +
               "        encrypted_key." + CIPHER_TEXT_JSON + " = binaryToBase64URL(new Uint8Array(encryped_aes_key));\n" +
@@ -616,8 +616,8 @@ public class HTML implements BaseProperties
               "function addECDHKey(name, jwk) {\n" +
               "    var public_key = encrypted_key[name] = {};\n" +
               "    var ec_key = public_key." + JSONSignatureDecoder.PUBLIC_KEY_JSON + " = {};\n" +
-              "    ec_key." + JSONSignatureDecoder.TYPE_JSON + " = jwk.kty;\n" +
-              "    ec_key." + JSONSignatureDecoder.CURVE_JSON + " = jwk.crv;\n" +
+              "    ec_key." + JSONSignatureDecoder.KTY_JSON + " = jwk.kty;\n" +
+              "    ec_key." + JSONSignatureDecoder.CRV_JSON + " = jwk.crv;\n" +
               "    ec_key." + JSONSignatureDecoder.X_JSON + " = jwk.x;\n" +
               "    ec_key." + JSONSignatureDecoder.Y_JSON + " = jwk.y;\n" +
               "}\n\n" +
