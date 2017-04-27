@@ -100,7 +100,7 @@ public class PaymentProviderServlet extends HttpServlet implements BasePropertie
             JSONObjectReader auth_data = null;
             if (encrypted_auth_data.hasProperty (ALGORITHM_JSON))
               {
-                SymEncryptionAlgorithms sym_alg = SymEncryptionAlgorithms.getAlgorithmFromID (encrypted_auth_data.getString (ALGORITHM_JSON));
+                SymEncryptionAlgorithms sym_alg = SymEncryptionAlgorithms.getAlgorithmFromId (encrypted_auth_data.getString (ALGORITHM_JSON));
                 if (sym_alg != SymEncryptionAlgorithms.AES256_CBC)
                   {
                     throw new IOException ("Unexpected \"" + ALGORITHM_JSON + "\": " + sym_alg.getAlgorithmId (AlgorithmPreferences.SKS));
@@ -115,7 +115,7 @@ public class PaymentProviderServlet extends HttpServlet implements BasePropertie
                       {
                         throw new IOException ("Unexpected encryption key:\n" + received_public_key.toString ());
                       }
-                    Cipher cipher = Cipher.getInstance (AsymEncryptionAlgorithms.RSA_OAEP_SHA256_MGF1P.getJCEName ());
+                    Cipher cipher = Cipher.getInstance (AsymEncryptionAlgorithms.RSA_OAEP_SHA256_MGF1P.getJceName ());
                     cipher.init (Cipher.DECRYPT_MODE, PaymentDemoService.bank_decryption_key.getKey ("mykey", PaymentDemoService.key_password.toCharArray ()));
                     raw_aes_key = cipher.doFinal (encrypted_key.getBinary (CIPHER_TEXT_JSON));
                   }
@@ -140,13 +140,13 @@ public class PaymentProviderServlet extends HttpServlet implements BasePropertie
                       {
                         throw new IOException ("Unexpected \"" + ALGORITHM_JSON + "\": " + concat.getString (ALGORITHM_JSON));
                       }
-                    HashAlgorithms hash_algorithm = HashAlgorithms.getAlgorithmFromID (concat.getString (HASH_ALGORITHM_JSON));
+                    HashAlgorithms hash_algorithm = HashAlgorithms.getAlgorithmFromId (concat.getString (HASH_ALGORITHM_JSON));
                     byte[] algorithm_id = concat.getBinary (ALGORITHM_ID_JSON);
                     byte[] party_u_info = concat.getBinary (PARTY_U_INFO_JSON);
                     byte[] party_v_info = concat.getBinary (PARTY_V_INFO_JSON);
                     raw_aes_key = Z;  // For now...since WebCrypto does not (yet) implement CONCAT
                   }
-                Cipher cipher = Cipher.getInstance (sym_alg.getJCEName ());
+                Cipher cipher = Cipher.getInstance (sym_alg.getJceName ());
                 SecretKeySpec sk = new SecretKeySpec (raw_aes_key, "AES");
                 cipher.init (Cipher.DECRYPT_MODE, sk, new IvParameterSpec (encrypted_auth_data.getBinary (IV_JSON)));
                 auth_data = getUserAuthorization (cipher.doFinal (encrypted_auth_data.getBinary (CIPHER_TEXT_JSON)));
@@ -162,7 +162,7 @@ public class PaymentProviderServlet extends HttpServlet implements BasePropertie
             JSONObjectReader payee = auth_data.getObject (PAYMENT_REQUEST_JSON);
             PaymentRequest.parseJSONData (payee);  // No DB to store in...
             JSONObjectReader request_hash = trans_req.getObject(REQUEST_HASH_JSON);
-            HashAlgorithms hash_alg = HashAlgorithms.getAlgorithmFromID (request_hash.getString (ALGORITHM_JSON)); 
+            HashAlgorithms hash_alg = HashAlgorithms.getAlgorithmFromId (request_hash.getString (ALGORITHM_JSON)); 
             if (hash_alg != HashAlgorithms.SHA256)
               {
                 throw new IOException ("Unexpected hash algorithm: " + hash_alg.getAlgorithmId ());

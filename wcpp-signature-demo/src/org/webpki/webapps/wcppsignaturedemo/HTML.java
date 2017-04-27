@@ -878,7 +878,7 @@ public class HTML implements BaseProperties
               {
                 for (int i = 0; i < ext_key_usages.length; i++)
                   {
-                    ext_key_usages[i] = ExtendedKeyUsages.getOptionallyTranslatedEKU (ext_key_usages[i]);
+                    ext_key_usages[i] = ExtendedKeyUsages.getOptionallyTranslatedEku (ext_key_usages[i]);
                   }
                 addURIProperties ("Extended&nbsp;key&nbsp;usage", ext_key_usages);
               }
