@@ -27,7 +27,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.webpki.crypto.AlgorithmPreferences;
 import org.webpki.crypto.AsymSignatureAlgorithms;
 import org.webpki.crypto.CertificateUtil;
 import org.webpki.crypto.HashAlgorithms;
@@ -40,6 +39,7 @@ import org.webpki.json.JSONObjectWriter;
 import org.webpki.json.JSONOutputFormats;
 import org.webpki.json.JSONParser;
 import org.webpki.json.JSONX509Verifier;
+import org.webpki.json.JSONSignatureDecoder;
 
 import org.webpki.tools.XML2HTMLPrinter;
 
@@ -101,7 +101,7 @@ public class SignedResultServlet extends HttpServlet implements BaseProperties
                     throw new IOException ("Document verification error");                  
                   }
                 VerifierInterface verifier = new KeyStoreVerifier (SignatureDemoService.client_root_kestore);
-                json.getSignature (AlgorithmPreferences.JOSE).verify (new JSONX509Verifier (verifier));
+                json.getSignature (new JSONSignatureDecoder.Options()).verify (new JSONX509Verifier (verifier));
                 signature = new JSONObjectWriter (json).serializeToString (JSONOutputFormats.PRETTY_HTML);
               }
             else

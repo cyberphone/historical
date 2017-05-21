@@ -29,7 +29,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.webpki.crypto.AlgorithmPreferences;
 import org.webpki.crypto.HashAlgorithms;
 import org.webpki.crypto.KeyStoreSigner;
 import org.webpki.crypto.KeyStoreVerifier;
@@ -40,6 +39,7 @@ import org.webpki.json.JSONOutputFormats;
 import org.webpki.json.JSONParser;
 import org.webpki.json.JSONX509Signer;
 import org.webpki.json.JSONX509Verifier;
+import org.webpki.json.JSONSignatureDecoder;
 
 import org.webpki.net.HTTPSWrapper;
 
@@ -89,8 +89,7 @@ public class AuthorizeRequestServlet extends HttpServlet implements BaseProperti
             signer.setExtendedCertPath (true);
             signer.setKey (null, PaymentDemoService.key_password);
             transact.setSignature (new JSONX509Signer (signer)
-                .setSignatureCertificateAttributes (true)
-                .setAlgorithmPreferences (AlgorithmPreferences.JOSE));
+                .setSignatureCertificateAttributes (true));
             HTTPSWrapper https_wrapper = new HTTPSWrapper ();
             https_wrapper.setRequireSuccess (true);
             https_wrapper.makePostRequest (auth_url, transact.serializeToBytes (JSONOutputFormats.NORMALIZED));
@@ -105,7 +104,7 @@ public class AuthorizeRequestServlet extends HttpServlet implements BaseProperti
               {
                 JSONObjectReader copy = authorized_result.getObject (PAYMENT_REQUEST_JSON);
                 payment_request = PaymentRequest.parseJSONData (copy);
-                copy.getSignature (AlgorithmPreferences.JOSE);                   // Just to keep the parser happy...
+                copy.getSignature (new JSONSignatureDecoder.Options());                   // Just to keep the parser happy...
                 if (!ArrayUtil.compare (HashAlgorithms.SHA256.digest (new JSONObjectWriter (copy).serializeToBytes (JSONOutputFormats.NORMALIZED)),
                                         request_hash))
                   {
@@ -114,7 +113,7 @@ public class AuthorizeRequestServlet extends HttpServlet implements BaseProperti
                 card_type = authorized_result.getString (CARD_TYPE_JSON);
                 reference_pan = authorized_result.getString (REFERENCE_PAN_JSON);
               }
-            authorized_result.getSignature (AlgorithmPreferences.JOSE)
+            authorized_result.getSignature (new JSONSignatureDecoder.Options())
                 .verify (new JSONX509Verifier (new KeyStoreVerifier (PaymentDemoService.payment_root)));
             authorized_result.getBinary (PAYMENT_TOKEN_JSON);   // No DB etc yet...
             authorized_result.getString (TRANSACTION_ID_JSON);  // No DB etc yet...

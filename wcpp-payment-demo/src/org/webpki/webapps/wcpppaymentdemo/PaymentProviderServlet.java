@@ -53,6 +53,7 @@ import org.webpki.json.JSONOutputFormats;
 import org.webpki.json.JSONParser;
 import org.webpki.json.JSONX509Signer;
 import org.webpki.json.JSONX509Verifier;
+import org.webpki.json.JSONSignatureDecoder;
 
 import org.webpki.util.ArrayUtil;
 
@@ -69,7 +70,7 @@ public class PaymentProviderServlet extends HttpServlet implements BasePropertie
     private X509Certificate verifyMerchantSignature (JSONObjectReader signed_object) throws IOException
       {
         VerifierInterface verifier = new KeyStoreVerifier (PaymentDemoService.merchant_root);
-        signed_object.getSignature (AlgorithmPreferences.JOSE).verify (new JSONX509Verifier (verifier));
+        signed_object.getSignature (new JSONSignatureDecoder.Options()).verify (new JSONX509Verifier (verifier));
         return verifier.getSignerCertificatePath ()[0];
       }
 
@@ -151,7 +152,7 @@ public class PaymentProviderServlet extends HttpServlet implements BasePropertie
                 cipher.init (Cipher.DECRYPT_MODE, sk, new IvParameterSpec (encrypted_auth_data.getBinary (IV_JSON)));
                 auth_data = getUserAuthorization (cipher.doFinal (encrypted_auth_data.getBinary (CIPHER_TEXT_JSON)));
                 VerifierInterface verifier = new KeyStoreVerifier (PaymentDemoService.client_root);
-                auth_data.getSignature (AlgorithmPreferences.JOSE).verify (new JSONX509Verifier (verifier));
+                auth_data.getSignature (new JSONSignatureDecoder.Options()).verify (new JSONX509Verifier (verifier));
               }
             else
               {
@@ -198,8 +199,7 @@ public class PaymentProviderServlet extends HttpServlet implements BasePropertie
             signer.setExtendedCertPath (true);
             signer.setKey (null, PaymentDemoService.key_password);
             result.setSignature (new JSONX509Signer (signer)
-                .setSignatureCertificateAttributes (true)
-                .setAlgorithmPreferences (AlgorithmPreferences.JOSE));
+                .setSignatureCertificateAttributes (true));
             auth_data.checkForUnread ();
             trans_req.checkForUnread ();
           }
